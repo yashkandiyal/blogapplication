@@ -1,41 +1,38 @@
-import express from "express";
-import User from "../models/User.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import "dotenv/config";
+const express = require("express");
+const User = require("../models/User.js");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("dotenv/config");
+
 const privateKey = process.env.SECRET_KEY;
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
     const { username, password } = req.body;
-    const userDetails = await User.findOne({ username });
-    const isPasswordPresent = bcrypt.compareSync(
-      password,
-      userDetails.password
-    );
-    console.log(isPasswordPresent);
-    if (isPasswordPresent) {
-      //user is logged in
-      jwt.sign(
-        { username, id: userDetails._id },
 
-        "privateKey",
-        {},
-        (err, token) => {
-          if (err) throw err;
-          console.log(token);
-          res.cookie("token", token).json("ok");
-        }
-      );
-    } else {
-      res.status(400).json({ message: "Wrong credentials" });
+    const userDetails = await User.findOne({ username });
+    if (!userDetails) {
+      return res.status(400).json({ message: "User not found" });
     }
+
+    const isPasswordValid = bcrypt.compareSync(password, userDetails.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Wrong credentials" });
+    }
+
+    const token = jwt.sign({ username, id: userDetails._id }, privateKey);
+
+    // Set a cookie named 'token' containing the JWT token
+    // Also, set a cookie named 'username' containing the username
+    res.cookie("token", token);
+    res.cookie("username", username);
+
+    return res.status(200).json({msg:"success"})
   } catch (error) {
-    res
-      .status(400)
-      .json({ message: "error in fetching login credentials from frontend" });
+    console.error("Error in login:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-export default router;
+module.exports = router;

@@ -1,14 +1,17 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useAuth } from "../context/Store";
+import Cookies from "js-cookie";
 const LoginPage = () => {
+  const { setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
   const sendCredentials = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/", {
+      const response = await fetch("http://localhost:3000/login", {
         method: "POST",
         body: JSON.stringify({ username, password }),
         headers: {
@@ -16,15 +19,25 @@ const LoginPage = () => {
         },
         credentials: "include",
       });
+
       if (response.ok) {
-        navigate("/register");
+        setIsAuthenticated(true);
+        navigate("/posts");
       } else {
-        alert("wrong credentials!");
+        alert("Wrong credentials!");
       }
     } catch (error) {
-      console.log("error sending credentials!", error);
+      console.log("Error sending credentials:", error);
     }
   };
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      setIsAuthenticated(true);
+      navigate("/posts");
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden md:max-w-md">

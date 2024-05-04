@@ -1,8 +1,9 @@
-import express from "express";
-import User from "./../models/User.js";
-import bcrypt from "bcryptjs";
+const express = require("express");
+const User = require("./../models/User.js");
+const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const router = express.Router();
+
 router.post("/", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -20,4 +21,5 @@ router.post("/", async (req, res) => {
       .json({ msg: "error in receiving data from register route", error });
   }
 });
-export default router;
+
+module.exports = router;
