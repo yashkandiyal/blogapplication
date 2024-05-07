@@ -1,7 +1,5 @@
-// Import mongoose
 const mongoose = require("mongoose");
 
-// Define the schema for the blog post
 const postSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -24,12 +22,20 @@ const postSchema = new mongoose.Schema({
     default: Date.now,
   },
   createdBy: {
-    type:String,
-   
+    type: String,
   },
+  createdByUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  likes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Like",
+    },
+  ],
 });
 
-// Create the model for the blog post
 const Post = mongoose.model("Post", postSchema);
 
 // Export the model

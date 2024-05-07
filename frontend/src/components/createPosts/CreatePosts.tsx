@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import Navbar from "./../navbar/Navbar";
 import { useState } from "react";
-import Cookies from "js-cookie";
+import { useAuth } from "../context/Store";
 
 const CreatePosts = () => {
-  const username = Cookies.get("username");
+  const { user } = useAuth();
+
   const [title, setTitle] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null); // Store the file object
@@ -20,7 +21,8 @@ const CreatePosts = () => {
       formData.append("title", title);
       formData.append("summary", summary);
       formData.append("content", content);
-      formData.append("username", username);
+
+      formData.append("userId", user?.id);
       if (imageFile) {
         formData.append("image", imageFile); // Append the file object to FormData
       }

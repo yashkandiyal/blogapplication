@@ -3,6 +3,9 @@ const router = express.Router();
 const multer = require("multer");
 const Post = require("../models/Posts");
 const cloudinary = require("cloudinary").v2;
+const Authentication = require("../Authentication");
+const User = require("../models/User.js");
+
 require("dotenv/config");
 // Configure Multer
 const storage = multer.memoryStorage();
@@ -17,8 +20,9 @@ cloudinary.config({
 
 router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const { title, summary, content,username } = req.body;
-    console.log(req.file.originalname);
+    const { title, summary, content, userId } = req.body;
+    const { username } = await User.findById(userId);
+
     const imageUrl = req.file ? req.file.buffer.toString("base64") : null; // Get image as base64 string from buffer
 
     // Upload image to Cloudinary
@@ -32,7 +36,8 @@ router.post("/", upload.single("image"), async (req, res) => {
       title,
       summary,
       content,
-      createdBy:username,
+      createdBy: username,
+      createdByUserId: userId,
       imageUrl: cloudinaryRes ? cloudinaryRes.secure_url : null, // Check if cloudinaryRes exists before accessing its properties
     });
     res.status(200).json({

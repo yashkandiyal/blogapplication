@@ -16,6 +16,8 @@ const PostsPageDetail = () => {
         },
       });
       const responseData = await response.json();
+      console.log(responseData);
+
       return responseData;
     } catch (error) {
       console.log("error fetching this post:", error);

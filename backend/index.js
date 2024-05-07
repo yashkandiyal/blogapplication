@@ -5,6 +5,7 @@ const LogoutRoute = require("./routes/LogoutRoute.js");
 const RegisterRoute = require("./routes/RegisterRoute.js");
 const CreatePostsRoute = require("./routes/CreatePostsRoute.js");
 const FetchPosts = require("./routes/FetchPosts.js");
+const FetchLikesForAPost=require("./routes/FetchLikesForAPost.js")
 const mongoose = require("mongoose");
 require("dotenv/config");
 const Authentication = require("./Authentication.js");
@@ -36,10 +37,12 @@ app.use("/register", RegisterRoute);
 app.use("/posts", FetchPosts);
 //render a particular post by id
 app.use("/posts/:id",FetchPostById)
+//fetch likes for a post
+app.use("/likes",FetchLikesForAPost)
 // create posts route
 app.use("/create", CreatePostsRoute);
 //logout rote
-app.use("/logout", Authentication, LogoutRoute);
+app.use("/logout", LogoutRoute);
 
 app.listen(port, () => {
   console.log(`Server is running at port:${port}`);

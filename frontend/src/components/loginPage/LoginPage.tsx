@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Store";
 import Cookies from "js-cookie";
 const LoginPage = () => {
-  const { setIsAuthenticated } = useAuth();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -19,9 +19,10 @@ const LoginPage = () => {
         },
         credentials: "include",
       });
+      const responseData = await response.json();
+      console.log(responseData);
 
       if (response.ok) {
-        setIsAuthenticated(true);
         navigate("/posts");
       } else {
         alert("Wrong credentials!");
@@ -30,13 +31,6 @@ const LoginPage = () => {
       console.log("Error sending credentials:", error);
     }
   };
-  useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      setIsAuthenticated(true);
-      navigate("/posts");
-    }
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

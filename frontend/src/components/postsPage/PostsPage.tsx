@@ -2,8 +2,10 @@ import Navbar from "../navbar/Navbar";
 import PostsCard from "./PostsCard";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../loader/Loader.tsx";
+import { useAuth } from "../context/Store.tsx";
 
 const PostsPage = () => {
+  const {setUser}=useAuth()
   const fetchData = async () => {
     try {
       const response = await fetch("http://localhost:3000/posts", {
@@ -11,11 +13,12 @@ const PostsPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
       const data = await response.json();
-      console.log(data);
-
-      return data;
+      
+      setUser(data.userDetails)
+      return data.allPosts;
     } catch (error) {
       console.log("error fetching posts:", error);
       return [];

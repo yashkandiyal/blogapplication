@@ -21,14 +21,17 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ message: "Wrong credentials" });
     }
 
-    const token = jwt.sign({ username, id: userDetails._id }, privateKey);
-
-    // Set a cookie named 'token' containing the JWT token
-    // Also, set a cookie named 'username' containing the username
-    res.cookie("token", token);
-    res.cookie("username", username);
-
-    return res.status(200).json({msg:"success"})
+    jwt.sign(
+      { username, id: userDetails._id },
+      privateKey,
+      {},
+      (err, token) => {
+        if (err) throw err;
+        res
+          .cookie("token", token)
+          .json({ username: userDetails.username, id: userDetails._id });
+      }
+    );
   } catch (error) {
     console.error("Error in login:", error);
     res.status(500).json({ message: "Internal server error" });
