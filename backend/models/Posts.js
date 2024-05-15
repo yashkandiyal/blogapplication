@@ -21,9 +21,7 @@ const postSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  createdBy: {
-    type: String,
-  },
+
   createdByUserId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -32,6 +30,12 @@ const postSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Like",
+    },
+  ],
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comments",
     },
   ],
 });

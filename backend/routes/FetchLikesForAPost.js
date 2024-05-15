@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
 
     // If there is an existing like, remove it
     if (existingLike) {
-      await Like.deleteOne({userId,postId})
+      await Like.deleteOne({ userId, postId });
       await Post.findByIdAndUpdate(postId, { $pull: { likes: userId } });
       const post = await Post.findById(postId);
       const likesCount = post.likes.length;
@@ -37,7 +37,5 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-module.exports = router;
 
 module.exports = router;

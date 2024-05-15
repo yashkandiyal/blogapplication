@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/Store";
 import Like from "../../assets/like.png";
 import Liked from "../../assets/liked.png";
+import Comment from "../../assets/comment.png";
+import Sidebar from "../sidebar/Sidebar";
+
 interface PostsPageDetailCardProps {
   imageUrl: string;
   createdBy: string;
@@ -10,7 +13,8 @@ interface PostsPageDetailCardProps {
   content: string;
   title: string;
   _id: string;
-  likes: [];
+  likes: string[]; // Assuming likes are represented by user IDs
+  comments: string[]; // Assuming comments are represented by comment IDs
 }
 
 const PostsPageDetailCard: React.FC<PostsPageDetailCardProps> = ({
@@ -21,12 +25,16 @@ const PostsPageDetailCard: React.FC<PostsPageDetailCardProps> = ({
   title,
   likes,
   _id,
+  comments,
 }) => {
-  const [likesCount, setLikesCount] = useState<number | null>(null);
-  const [isLiked, setIsLiked] = useState<boolean | null>(null);
-  const postId = _id;
   const { user } = useAuth();
   const userId = user.id;
+  const postId = _id;
+
+  const [likesCount, setLikesCount] = useState<number>(likes.length);
+  const [commentsCount, setCommentsCount] = useState<number>(comments.length);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const likePost = async () => {
     try {
@@ -42,17 +50,17 @@ const PostsPageDetailCard: React.FC<PostsPageDetailCardProps> = ({
       }
       const responseData = await response.json();
       setLikesCount(responseData.likesCount);
-      
+      setIsLiked(!isLiked);
     } catch (error) {
       console.error("Error liking/unliking post:", error);
     }
   };
 
-useEffect(() => {
-  setLikesCount(likes.length);
-  setIsLiked(likes.includes(userId));
-}, [likes, userId]);
-
+  useEffect(() => {
+    setIsLiked(likes.includes(userId));
+    setLikesCount(likes.length);
+    setCommentsCount(comments.length);
+  }, [likes, comments, userId]);
 
   const formattedDateTime = format(createdAt, "MMMM dd, yyyy hh:mm a");
 
@@ -67,21 +75,31 @@ useEffect(() => {
       <div className="p-6 md:px-10">
         <div className="flex justify-between items-center mb-4">
           <p className="text-gray-600 text-sm">By: {createdBy}</p>
-          <div
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={likePost}>
-            {isLiked ? (
-              <img src={Like} alt="Liked" className="h-5 w-5" />
-            ) : (
-              <img src={Liked} alt="Liked" className="h-5 w-5" />
-            )}
-
+          <div className="flex items-center gap-2 cursor-pointer">
+            <img
+              src={isLiked ? Liked : Like}
+              alt={isLiked ? "Liked" : "Like"}
+              className="h-6 w-6"
+              onClick={likePost}
+            />
+            <Sidebar
+              postId={postId}
+              userId={userId}
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+            />
             <p className="text-gray-600 text-sm">{likesCount}</p>
+            <img
+              src={Comment}
+              alt="Comment"
+              className="h-6 w-6"
+              onClick={() => setIsOpen((prev) => !prev)}
+            />
+            <p className="text-gray-600 text-sm">{commentsCount}</p>
           </div>
-
           <p className="text-gray-600 text-sm">{formattedDateTime}</p>
         </div>
-        <p className="text-gray-800 text-base md:text-lg leading-relaxed">
+        <p className="text-gray-800 text-base md:text-lg leading-relaxed whitespace-pre-line">
           {content}
         </p>
       </div>

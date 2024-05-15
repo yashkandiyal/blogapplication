@@ -32,7 +32,7 @@ const PostsPageDetail = () => {
     isError,
     isLoading,
   } = useQuery({
-    queryKey: ["fetchpostbyid"],
+    queryKey: ["fetchpostbyid", id],
     queryFn: fetchPostById,
   });
 

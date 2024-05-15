@@ -95,6 +95,7 @@ const RegisterPage = () => {
       });
       if (response.ok) {
         alert("Credentials successfully sent to register route!");
+        
       }
     } catch (error) {
       console.log("Error at register page:", error);
